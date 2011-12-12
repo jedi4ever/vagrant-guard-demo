@@ -1,0 +1,6 @@
+*.box
+iso/*
+.bundle
+vendor/*
+.vagrant
+.*.swp
