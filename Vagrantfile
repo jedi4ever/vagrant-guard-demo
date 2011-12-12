@@ -18,7 +18,7 @@ Vagrant::Config.run do |config|
 
   # Enable provisioning with Puppet stand alone.  Puppet manifests
   # are contained in a directory path relative to this Vagrantfile.
-  config.vm.provision :puppet, :options => "--verbose --debug"  do |puppet|
+  config.vm.provision :puppet, :options => "--verbose"  do |puppet|
      puppet.module_path = ["puppet-repo/modules"]
      puppet.manifests_path = "puppet-repo/manifests"
      puppet.manifest_file  = "site.pp"
