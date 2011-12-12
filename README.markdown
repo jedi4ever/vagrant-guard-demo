@@ -63,9 +63,6 @@ It's a typical vagrant project with the following tree structure:(only 3 levels 
     ├── Guardfile
     ├── README.markdown
     ├── Vagrantfile
-    ├── data
-    │   └── etc
-    │       └── server_tags
     ├── definitions
     │   └── lucid64
     │       ├── definition.rb
@@ -73,23 +70,76 @@ It's a typical vagrant project with the following tree structure:(only 3 levels 
     │       └── preseed.cfg
     ├── iso
     │   └── ubuntu-10.04.3-server-amd64.iso
-    ├── lucid64.box
-    ├── puppet-repo
-    │   ├── features
-    │   │   ├── catalog_policy.feature
-    │   │   ├── steps
-    │   │   └── support
-    │   ├── manifests
-    │   │   └── site.pp
-    │   └── modules
-    │       ├── apache
-    │       ├── role
-    │       └── truth
     └── vendor
         └── ruby
             └── 1.8
 
-Alas, life isn't always simple when you try adapt developer tools to system tools. We faced the following problems:
+The project follows Jordan Sissel's idea of [puppet nodeless configuration](http://www.semicomplete.com/blog/geekery/puppet-nodeless-configuration). To specify the classes to apply to a host, we use a fact called: `server_role`. We read this from a file `data/etc/server_tags` via [a custom fact](https://github.com/jedi4ever/vagrant-guard-demo/blob/master/puppet-repo/modules/truth/lib/facter/server_tags.rb) . (inspired by  [self-classifying puppet node](http://nuknad.com/2011/02/11/self-classifying-puppet-nodes/))
+
+This allows us to only require one file, `site.pp`. And we don't have to fiddle with our hostname to get the correct role. Also if we want to test multiple roles on this one test machine, just add another role to the `data/etc/server_tags` file.
+
+    ├── data
+    │   └── etc
+    │       └── server_tags
+
+    $ cat data/etc/server_tags
+    role:webserver=true
+
+The puppet modules and manifests can be found in `puppet-repo`. It has class `role::webserver` which includes class `apache`.
+
+    puppet-repo
+    ├── features # This is where the cucucumber-puppet catalog policy feature lives
+    │   ├── catalog_policy.feature
+    │   ├── steps
+    │   │   ├── catalog_policy.rb
+    │   └── support
+    │       ├── hooks.rb
+    │       └── world.rb
+    ├── manifests 
+    │   └── site.pp #No nodes required
+    └── modules
+        ├── apache
+        |    <module content>
+        ├── role
+        │   ├── manifests
+        │   │   └── webserver.pp # Corresponds with the role specified
+        │   └── rspec
+        │       ├── classes
+        │       └── spec_helper.rb
+        └── truth # Logic of puppet nodeless configuration
+            ├── lib
+            │   ├── facter
+            │   └── puppet
+            └── manifests
+                └── enforcer.pp
+
+- The cucumber-puppet tests will check if the catalog compiles for role `role::webserver` 
+
+    Feature: Catalog policy
+      In order to ensure basic correctness
+      I want all catalogs to obey my policy
+
+      Scenario Outline: Generic policy for all server roles
+        Given a node with role "<server_role>"
+        When I compile its catalog
+        Then compilation should succeed
+
+        Examples:
+          | server_role |
+          | role::webserver |
+
+- The rspec-puppet tests will check if the package `http` get installed
+
+    require "#{File.join(File.dirname(__FILE__),'..','spec_helper')}"
+
+    describe 'role::webserver', :type => :class do
+      let(:facts) {{:server_tags => 'role:webserver=true',
+          :operatingsystem => 'Ubuntu'}}
+      it { should include_class('apache') }
+      it { should contain_package('httpd').with_ensure('present') }
+    end
+
+So how do we make this work with guard?
 
 1. the guard-cucumber assumes to have it's features in `$PROJECT/features`
 2. if we add both guard-rspec and guard-cucumber we need to check if both tests before running `vagrant provision`
