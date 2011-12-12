@@ -24,6 +24,7 @@ The first tool I came across is [autotest](https://github.com/autotest/autotest)
 Enter [Guard](https://github.com/guard/guard); it describes itself as _a command line tool to easily handle events on file system modifications (FSEvent / Inotify / Polling support)_ . Just what we wanted.
 
 Installing Guard is pretty easy, you require the following gems in your Gemfile
+
     gem 'guard'
     gem 'rb-inotify', :require => false
     gem 'rb-fsevent', :require => false
