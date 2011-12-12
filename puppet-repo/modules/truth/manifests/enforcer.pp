@@ -3,5 +3,4 @@ class truth::enforcer {
     include role::webserver
     notice("I am a webserver")
   }
-
 }
