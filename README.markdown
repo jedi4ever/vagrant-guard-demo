@@ -97,7 +97,7 @@ The puppet modules and manifests can be found in `puppet-repo`. It has class `ro
     │   └── support
     │       ├── hooks.rb
     │       └── world.rb
-    ├── manifests 
+    ├── manifests
     │   └── site.pp #No nodes required
     └── modules
         ├── apache
@@ -115,8 +115,21 @@ The puppet modules and manifests can be found in `puppet-repo`. It has class `ro
             └── manifests
                 └── enforcer.pp
 
+### Puppet - Vagrant setup
+
+These are the settings we use our Vagrant file to make puppet work
+
+    config.vm.share_folder "v-data", "/data", File.join(File.dirname(__FILE__)    ,"data")
+    # Enable provisioning with Puppet stand alone.  Puppet manifests
+    # are contained in a directory path relative to this Vagrantfile.
+    config.vm.provision :puppet, :options => "--verbose"  do |puppet|
+      puppet.module_path = ["puppet-repo/modules"]
+      puppet.manifests_path = "puppet-repo/manifests"
+      puppet.manifest_file  = "site.pp"
+    end
+
 ### Puppet tests setup
-The cucumber-puppet tests will check if the catalog compiles for role `role::webserver` 
+The cucumber-puppet tests will check if the catalog compiles for role `role::webserver`
 
     Feature: Catalog policy
       In order to ensure basic correctness
@@ -257,7 +270,7 @@ With all the correct guards and logic setup, it's time to specify the correct op
 The full [Guardfile is on github](http://github.com/jedi4ever/vagrant-guard-demo/Guardfile)
 
 ### Run it
-From within the top directory of the project type 
+From within the top directory of the project type
 
 `$ guard`
 
