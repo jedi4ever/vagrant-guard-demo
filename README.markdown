@@ -1,27 +1,27 @@
 # Test Driven Infrastructure with Vagrant, Puppet and Guard
 ## Why
-[Vagrant](http://vagrantup.com) is a great tool : people use it as a sandbox environment to develop their Chef recipes or Puppet manifests in a safe environment.
+Lots have been written about [Vagrant](http://vagrantup.com) . It simply is [a great tool](http://www.slideshare.net/jedi4ever/vagrant-devopsdays-mountain-view-2011) : people use it as a sandbox environment to develop their Chef recipes or Puppet manifests in a safe environment.
 
 The workflow usually looks like this:
 
-- create a vagrant vm
+- you create a vagrant vm
 - share some puppet/chef files via a shared directory
 - edit some files locally
 - run a `vagrant provision` to see if this works
-- if we are happy with it, commit it to the version control repository
+- and if we are happy with it, commit it to your favorite version control repository
 
 Specifically for puppet, thanks to the great work by [Nicolas Sturm](http://twitter.com/nistude) and [Tim Sharpe](http://twitter.com/rodjek), we can now also complement this with tests written in [rspec-puppet](https://github.com/rodjek/rspec-puppet) and [cucumber-puppet](https://github.com/nistude/cucumber-puppet). You can find more info at [Puppet unit testing like a pro](http://www.jedi.be/blog/2011/12/05/puppet-unit-testing-like-a-pro/).
 
-So we got code, and we got tests, what else are we missing? Automation of this process: it's funny if you think of it that we automate the hell out of server installations, but haven't automated the previous described process.
+So we got code, and we got tests, what else are we missing? **Automation** of this process: it's funny if you think of it that we automate the hell out of server installations, but haven't automated the previous described process.
 
 The need to run `vagrant provision` or `rake rspec` actually breaks my development flow: I have to leave my editor to run a shell command and then come back to it depending on the output.
 
-Wouldn't it be great if we could automate this whole cycle? And have it run tests and provision whenever files change?
+Would it not be great if we could automate this whole cycle? And have it run tests and provision whenever files change?
 
 ## How
-The first tool I came across is [autotest](https://github.com/autotest/autotest) : it allows one to automatically re-execute tests depending on filesystem changes. Downside was that it could either run cucumber tests or rspec tests.
+The first tool I came across is [autotest](https://github.com/autotest/autotest) : it allows one to automatically re-execute tests depending on filesystem changes. Downside is that it could either run cucumber tests or rspec tests.
 
-Enter [Guard](https://github.com/guard/guard); it describes itself as _a command line tool to easily handle events on file system modifications (FSEvent / Inotify / Polling support)_ . Just what we wanted.
+So enter [Guard](https://github.com/guard/guard); it describes itself as _a command line tool to easily handle events on file system modifications (FSEvent / Inotify / Polling support)_ . Just what we wanted!
 
 Installing Guard is pretty easy, you require the following gems in your Gemfile
 
@@ -31,9 +31,10 @@ Installing Guard is pretty easy, you require the following gems in your Gemfile
     gem 'rb-fchange', :require => false
     gem 'growl'
 
+As you can tell by the names, it uses different strategies to detect changes in your directories. And it uses growl (if correctly setup) to notify you if your tests pass or fail
 Once installed you get a command `guard`
 
-Guard uses a configurationfile `Guardfile`, which can be created by `guard init`. In this file you define different guards based on different helpers: for example there is [guard-rspec](http://github.com/guard/guard-rspec), [guard-cucumber](http://github.com/guard/guard-cucumber) and [many more](http://github.com/guard). There is even a [guard-puppet](http://github.com/guard/guard-puppet).
+Guard uses a configurationfile `Guardfile`, which can be created by `guard init`. In this file you define different guards based on different helpers: for example there is [guard-rspec](http://github.com/guard/guard-rspec), [guard-cucumber](http://github.com/guard/guard-cucumber) and [many more](http://github.com/guard). There is even a [guard-puppet](http://github.com/guard/guard-puppet)(which we will not use because it works only for local provisioning)
 
 To install one of these helpers you just include it in your Gemfile. We are using only two here:
 
@@ -63,12 +64,12 @@ It's a typical vagrant project with the following tree structure:(only 3 levels 
     ├── Guardfile
     ├── README.markdown
     ├── Vagrantfile
-    ├── definitions
+    ├── definitions # Veewee definitions
     │   └── lucid64
     │       ├── definition.rb
     │       ├── postinstall.sh
     │       └── preseed.cfg
-    ├── iso
+    ├── iso # Veewee iso
     │   └── ubuntu-10.04.3-server-amd64.iso
     └── vendor
         └── ruby
@@ -113,8 +114,8 @@ The puppet modules and manifests can be found in `puppet-repo`. It has class `ro
             │   └── puppet
             └── manifests
                 └── enforcer.pp
-### Puppet tests setup
 
+### Puppet tests setup
 The cucumber-puppet tests will check if the catalog compiles for role `role::webserver` 
 
     Feature: Catalog policy
@@ -141,7 +142,7 @@ The rspec-puppet tests will check if the package `http` get installed
     end
 
 ### Guard setup
-To make Guard work with a setup like previously described we needed to change some things.
+To make Guard work with a setup like our `puppet-repo` directory we need to change some things.
 This has mostly todo with conventions used in development projects where Guard is normally used.
 
 #### Fixing Guard-Cucumber to read from puppetrepo/features
@@ -211,6 +212,8 @@ Inspired by [the comments](https://github.com/guard/guard/issues/189#issuecommen
     end
 
 ### Guard matchers
+With all the correct guards and logic setup, it's time to specify the correct options to our Guards.
+
     group :tests do
 
       # Run rspec-puppet tests
@@ -253,4 +256,19 @@ Inspired by [the comments](https://github.com/guard/guard/issues/189#issuecommen
 
 The full [Guardfile is on github](http://github.com/jedi4ever/vagrant-guard-demo/Guardfile)
 
+### Run it
+From within the top directory of the project run `guard`. Now open a second terminal and change some of the files and watch the magic happen.
+
 # Conclusion
+The setup described is an idea I only recently started exploring. I'll probably enhance this in the future or may experience other problems.
+
+For the demo project, I only call `vagrant provision` , but this can of course be extended easily. Some ideas:
+
+1.Inspired by [Oliver Hookins - How we use Vagrant as a throwaway testing environment](http://paperairoplane.net/?p=240):
+
+- use [sahara](http://github.com/jedi4ever/sahara) to create a snapshot just before the provisioning
+- have it start from a clean machine when all test pass
+
+2. Turn this into a guard-vagrant gem, to monitor files and tests
+
+If you have other ideas or remarks , feel free to add them to the comments.
