@@ -113,7 +113,7 @@ The puppet modules and manifests can be found in `puppet-repo`. It has class `ro
             └── manifests
                 └── enforcer.pp
 
-- The cucumber-puppet tests will check if the catalog compiles for role `role::webserver` 
+The cucumber-puppet tests will check if the catalog compiles for role `role::webserver` 
 
     Feature: Catalog policy
       In order to ensure basic correctness
@@ -128,10 +128,9 @@ The puppet modules and manifests can be found in `puppet-repo`. It has class `ro
           | server_role |
           | role::webserver |
 
-- The rspec-puppet tests will check if the package `http` get installed
+The rspec-puppet tests will check if the package `http` get installed
 
     require "#{File.join(File.dirname(__FILE__),'..','spec_helper')}"
-
     describe 'role::webserver', :type => :class do
       let(:facts) {{:server_tags => 'role:webserver=true',
           :operatingsystem => 'Ubuntu'}}
@@ -139,8 +138,13 @@ The puppet modules and manifests can be found in `puppet-repo`. It has class `ro
       it { should contain_package('httpd').with_ensure('present') }
     end
 
-So how do we make this work with guard?
+To make this setup play nice with `Guard`, we had to overcome the following difficulties:
 
-1. the guard-cucumber assumes to have it's features in `$PROJECT/features`
-2. if we add both guard-rspec and guard-cucumber we need to check if both tests before running `vagrant provision`
+- the guard-cucumber assumes to have it's features in `$PROJECT/features`
+- if we add both guard-rspec and guard-cucumber we need a way to check if both tests before running `vagrant provision`
 
+The first one was solved by extending and monkey patching the existing `guard-cucumber`:
+
+
+
+The full [Guardfile is on github](http://github.com/jedi4ever/vagrant-guard-demo/Guardfile)
