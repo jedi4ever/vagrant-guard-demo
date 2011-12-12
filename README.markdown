@@ -40,7 +40,7 @@ To install one of these helpers you just include it in your Gemfile. We are usin
     gem 'guard-rspec'
     gem 'guard-cucumber'
 
-Each of these helpers have a similar way of configuring themselves inside a Guardfile. A vanilla for a ruby gem with rspec testing would like this:
+Each of these helpers have a similar way of configuring themselves inside a Guardfile. A vanilla guard for a ruby gem with rspec testing would like this:
 
     guard 'rspec' do
       watch(%r{^spec/.+_spec\.rb$})
@@ -54,4 +54,43 @@ Whenever a file that matches a watch expression changes, it would run an rspec t
 Once you have `Guardfile` you simply run `guard` (or `bundle exec guard`) to have it watch changes. Simple hu?
 
 ## What
+Enter our sample puppet/vagrant project. You can find the full source at <http://github.com/jedi4ever/vagrant-guard-demo>
+
+It's a typical vagrant project with the following tree structure:(only 3 levels shown)
+
+    ├── Gemfile
+    ├── Gemfile.lock
+    ├── Guardfile
+    ├── README.markdown
+    ├── Vagrantfile
+    ├── data
+    │   └── etc
+    │       └── server_tags
+    ├── definitions
+    │   └── lucid64
+    │       ├── definition.rb
+    │       ├── postinstall.sh
+    │       └── preseed.cfg
+    ├── iso
+    │   └── ubuntu-10.04.3-server-amd64.iso
+    ├── lucid64.box
+    ├── puppet-repo
+    │   ├── features
+    │   │   ├── catalog_policy.feature
+    │   │   ├── steps
+    │   │   └── support
+    │   ├── manifests
+    │   │   └── site.pp
+    │   └── modules
+    │       ├── apache
+    │       ├── role
+    │       └── truth
+    └── vendor
+        └── ruby
+            └── 1.8
+
+Alas, life isn't always simple when you try adapt developer tools to system tools. We faced the following problems:
+
+1. the guard-cucumber assumes to have it's features in `$PROJECT/features`
+2. if we add both guard-rspec and guard-cucumber we need to check if both tests before running `vagrant provision`
 
