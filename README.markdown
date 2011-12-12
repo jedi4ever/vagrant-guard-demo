@@ -1,4 +1,4 @@
-# Test Driven Infrastructure with Vagrant, Puppet, Cucumber-Puppet, Rspec-Puppet and Guard
+# Test Driven Infrastructure with Vagrant, Puppet and Guard
 ## Why
 [Vagrant](http://vagrantup.com) is a great tool : people use it as a sandbox environment to develop their Chef recipes or Puppet manifests in a safe environment.
 
