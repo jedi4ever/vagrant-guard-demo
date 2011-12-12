@@ -14,7 +14,7 @@ Specifically for puppet, thanks to the great work by [Nicolas Sturm](http://twit
 
 So we got code, and we got tests, what else are we missing? Automation of this process: it's funny if you think of it that we automate the hell out of server installations, but haven't automated the previous described process.
 
-Compared to TDD cycle, the need to run `vagrant provision` or `rake rspec` actually breaks my development flow: I have to leave my editor to run a shell command and then come back to it depending on the output.
+The need to run `vagrant provision` or `rake rspec` actually breaks my development flow: I have to leave my editor to run a shell command and then come back to it depending on the output.
 
 Wouldn't it be great if we could automate this whole cycle? And have it run tests and provision whenever files change?
 
@@ -33,7 +33,25 @@ Installing Guard is pretty easy, you require the following gems in your Gemfile
 
 Once installed you get a command `guard`
 
-Guard uses a configurationfile `Guardfile`, which can be created by `guard init`
+Guard uses a configurationfile `Guardfile`, which can be created by `guard init`. In this file you define different guards based on different helpers: for example there is [guard-rspec](http://github.com/guard/guard-rspec), [guard-cucumber](http://github.com/guard/guard-cucumber) and [many more](http://github.com/guard). There is even a [guard-puppet](http://github.com/guard/guard-puppet).
+
+To install one of these helpers you just include it in your Gemfile. We are using only two here:
+
+    gem 'guard-rspec'
+    gem 'guard-cucumber'
+
+Each of these helpers have a similar way of configuring themselves inside a Guardfile. A vanilla for a ruby gem with rspec testing would like this:
+
+    guard 'rspec' do
+      watch(%r{^spec/.+_spec\.rb$})
+      watch(%r{^lib/(.+)\.rb$})     { |m| "spec/lib/#{m[1]}_spec.rb" }
+      watch('spec/spec_helper.rb')  { "spec" }
+      end
+    end
+
+Whenever a file that matches a watch expression changes, it would run an rspec test. By default if no block is supplied, the file itself is run. You can alter the path in a block as in the example.
+
+Once you have `Guardfile` you simply run `guard` (or `bundle exec guard`) to have it watch changes. Simple hu?
 
 ## What
 
