@@ -258,7 +258,8 @@ The full [Guardfile is on github](http://github.com/jedi4ever/vagrant-guard-demo
 
 ### Run it
 From within the top directory of the project type 
-`$ guard`.
+
+`$ guard`
 
 Now open a second terminal and change some of the files and watch the magic happen.
 
