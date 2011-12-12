@@ -265,10 +265,8 @@ The setup described is an idea I only recently started exploring. I'll probably 
 For the demo project, I only call `vagrant provision` , but this can of course be extended easily. Some ideas:
 
 1.Inspired by [Oliver Hookins - How we use Vagrant as a throwaway testing environment](http://paperairoplane.net/?p=240):
-
-- use [sahara](http://github.com/jedi4ever/sahara) to create a snapshot just before the provisioning
-- have it start from a clean machine when all test pass
-
+  - use [sahara](http://github.com/jedi4ever/sahara) to create a snapshot just before the provisioning
+  - have it start from a clean machine when all test pass
 2. Turn this into a guard-vagrant gem, to monitor files and tests
 
 If you have other ideas or remarks , feel free to add them to the comments.
