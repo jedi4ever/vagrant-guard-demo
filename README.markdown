@@ -257,14 +257,17 @@ With all the correct guards and logic setup, it's time to specify the correct op
 The full [Guardfile is on github](http://github.com/jedi4ever/vagrant-guard-demo/Guardfile)
 
 ### Run it
-From within the top directory of the project run `guard`. Now open a second terminal and change some of the files and watch the magic happen.
+From within the top directory of the project type 
+`$ guard`.
 
-# Conclusion
+Now open a second terminal and change some of the files and watch the magic happen.
+
+# Final remarks
 The setup described is an idea I only recently started exploring. I'll probably enhance this in the future or may experience other problems.
 
 For the demo project, I only call `vagrant provision` , but this can of course be extended easily. Some ideas:
 
-1.Inspired by [Oliver Hookins - How we use Vagrant as a throwaway testing environment](http://paperairoplane.net/?p=240):
+1. Inspired by [Oliver Hookins - How we use Vagrant as a throwaway testing environment](http://paperairoplane.net/?p=240):
   - use [sahara](http://github.com/jedi4ever/sahara) to create a snapshot just before the provisioning
   - have it start from a clean machine when all test pass
 2. Turn this into a guard-vagrant gem, to monitor files and tests
