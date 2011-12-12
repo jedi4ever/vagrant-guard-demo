@@ -15,14 +15,20 @@ gem "puppet-lint"
 gem "rspec"
 gem "cucumber", '~> 1.0.2'
 
-# Guard section
+# Guard gem itself
+# see - https://github.com/guard/guard
+gem 'guard'
+gem 'rb-inotify', :require => false
+gem 'rb-fsevent', :require => false
+gem 'rb-fchange', :require => false
+gem 'growl'
+
+# Guard helpers
 gem "guard-rspec"
 gem "guard-shell"
 gem "guard-cucumber"
-gem "guard"
-gem "growl"
-gem "rb-fsevent"
 
 # Puppet section
 gem "puppet-module"
 gem "puppet"
+
