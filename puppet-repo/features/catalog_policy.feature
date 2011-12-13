@@ -6,6 +6,7 @@ Feature: Catalog policy
     Given a node with role "<server_role>"
     When I compile its catalog
     Then compilation should succeed
+    And all resource dependencies should resolve
 
     Examples:
       | server_role |
