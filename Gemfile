@@ -4,7 +4,7 @@ gem "rake"
 
 # To get vagrant and virtualbox going
 gem "vagrant",'~> 0.8'
-gem "veewee"
+gem "veewee",">= 0.2"
 gem "sahara"
 
 # Test steps section
@@ -13,7 +13,8 @@ gem "cucumber-puppet"
 gem "rspec-puppet"
 gem "puppet-lint"
 gem "rspec"
-gem "cucumber", '~> 1.0.2'
+gem "cucumber", ">=1.0.0"
+#, '~> 1.0.2'
 
 # Guard gem itself
 # see - https://github.com/guard/guard
@@ -32,3 +33,6 @@ gem "guard-cucumber"
 gem "puppet-module"
 gem "puppet"
 
+
+#
+gem "aruba"
