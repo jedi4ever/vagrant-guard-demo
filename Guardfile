@@ -39,7 +39,7 @@ end
 # This block simply calls vagrant provision via a shell
 # And shows the output
 def vagrant_provision
-  IO.popen("vagrant provision") do |output|
+  IO.popen("vagrant provision && rake validate") do |output|
     while line = output.gets do
       puts line
     end
@@ -76,7 +76,7 @@ group :tests do
   # This uses out extended cucumber guard, as by default it only looks in the features directory
   # --strict        : because otherwise cucumber would exit with 0 when there are pending steps
   # --format pretty : to get readable output, default is null output
-  guard :extendedcucumber, :cli => "--require puppet-repo/features --strict --format pretty" do
+  guard :extendedcucumber, :cli => "-s --require puppet-repo/features --strict --format pretty" do
 
     # Match any .pp file (but be carefull not include and dot-temporary files)
     watch(%r{^puppet-repo/[^.]*\.pp$}) { "puppet-repo/features" }

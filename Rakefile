@@ -11,5 +11,5 @@ Cucumber::Rake::Task.new(:validate) do |task|
     ssh_name=ENV['vm'] || "default"
     ENV['SYSTEM_CONNECT']="vagrant ssh #{vm_name}"
     ENV['SYSTEM_EXECUTE']="vagrant ssh_config #{vm_name}| ssh -q -F /dev/stdin #{ssh_name}"
-    task.cucumber_opts = ["-s","features" ]
+    task.cucumber_opts = ["-s","-c", "features" ]
 end
